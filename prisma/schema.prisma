@@ -1,0 +1,119 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["interactiveTransactions"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int                @id @default(autoincrement())
+  email         String?            @unique
+  phoneNumber   String?            @unique @map("phone_number")
+  password      String
+  profile       Profile?
+  organizations UserOrganization[]
+  donates       Donation[]         @relation("donates")
+  createdAt     DateTime           @default(now()) @map("created_at")
+  updatedAt     DateTime?          @updatedAt @map("updated_at")
+
+  comments Comment[]
+  @@map("users")
+}
+
+model Profile {
+  id          Int       @id @default(autoincrement())
+  profileName String    @map("profile_name")
+  user        User      @relation(fields: [userId], references: [id])
+  userId      Int       @unique
+  // posts       Post[]
+  posts       Post[]    @relation("profile")
+  balance     Int       @default(0)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime? @updatedAt @map("updated_at")
+
+  Donation Donation[] @relation("recieved_donations")
+  @@map("profiles")
+}
+
+model Post {
+  id             Int           @id @default(autoincrement())
+  entity         String // should be enum later
+  profile        Profile?      @relation("profile", fields: [profileId], references: [id])
+  profileId      Int?
+  organization   Organization? @relation("organization", fields: [organizationId], references: [id])
+  organizationId Int?
+  content        String
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime?     @updatedAt @map("updated_at")
+
+  comments Comment[]
+  @@map("posts")
+}
+
+model Comment {
+  id         Int       @id @default(autoincrement())
+  user       User      @relation(fields: [userId], references: [id])
+  userId     Int       @map("user_id")
+  post       Post      @relation(fields: [postId], references: [id])
+  postId     Int       @map("post_id")
+  content    String
+  parent     Comment?  @relation("sub_comment", fields: [parentId], references: [id])
+  parentId   Int?      @map("parent_id")
+  subComment Comment[] @relation("sub_comment")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime? @updatedAt @map("updated_at")
+
+  @@map("comments")
+}
+
+model Organization {
+  id               Int                @id @default(autoincrement())
+  users            UserOrganization[]
+  organizationName String             @map("organization_name")
+  posts            Post[]             @relation("organization")
+  createdAt        DateTime           @default(now()) @map("created_at")
+  updatedAt        DateTime?          @updatedAt @map("updated_at")
+
+  @@map("organizations")
+}
+
+model UserOrganization {
+  user           User         @relation(fields: [userId], references: [id])
+  userId         Int
+  oraganization  Organization @relation(fields: [organizationId], references: [id])
+  organizationId Int
+  role           String       @default("member") // admin, member
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime?    @updatedAt @map("updated_at")
+
+  @@id([userId, organizationId])
+  @@map("user_organization")
+}
+
+model Donation {
+  id          Int           @id @default(autoincrement())
+  donator     User          @relation("donates", fields: [donatorId], references: [id])
+  donatorId   Int
+  reciever    Profile       @relation("recieved_donations", fields: [recieverId], references: [id])
+  recieverId  Int
+  amount      BigInt
+  transaction Transaction[] @relation("donation_transaction")
+  createdAt   DateTime      @default(now()) @map("created_at")
+
+  @@map("donations")
+}
+
+model Transaction {
+  id         Int      @id @default(autoincrement())
+  donation   Donation @relation("donation_transaction", fields: [donationId], references: [id])
+  donationId Int
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@map("transactions")
+}
