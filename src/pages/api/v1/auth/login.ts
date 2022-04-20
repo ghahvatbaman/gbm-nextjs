@@ -1,5 +1,5 @@
-import apiHandler from "../../../../lib/apiHanlder";
-import prisma from "../../../../lib/prismaClient";
+import apiHandler from "lib/apiHanlder";
+import prisma from "lib/prismaClient";
 import * as argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import cookie from "cookie";
