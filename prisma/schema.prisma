@@ -22,8 +22,18 @@ model User {
   createdAt     DateTime           @default(now()) @map("created_at")
   updatedAt     DateTime?          @updatedAt @map("updated_at")
 
+  token VerfiedToken?
+
   comments Comment[]
   @@map("users")
+}
+
+model VerfiedToken {
+  token  String @id @unique
+  userId Int    @unique @map("user_id")
+  User   User   @relation(fields: [userId], references: [id])
+
+  @@map("verified_tokens")
 }
 
 model Profile {

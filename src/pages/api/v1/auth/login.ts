@@ -39,13 +39,21 @@ export default apiHandler.post(async (req, res) => {
       }
     );
 
+    const refreshToken = jwt.sign({ id: foundedUser.id }, "secret", {
+      expiresIn: "16W",
+    });
+    await prisma.user.update({
+      where: { id: foundedUser.id },
+      data: { token: { create: { token: refreshToken } } },
+    });
+
     if (!!req.headers["x-gbm-mobile"]) {
       // authorization header
       res.setHeader("x-authorization", token);
       return res.status(201).json({
         success: true,
         message: "",
-        data: { user, token },
+        data: { user, token, refreshToken },
       });
     } else {
       // cookie
@@ -59,7 +67,7 @@ export default apiHandler.post(async (req, res) => {
       return res.status(200).json({
         success: true,
         message: "user created",
-        data: { user, token },
+        data: { user, token, refreshToken },
       });
     }
   } catch (err) {
