@@ -4,7 +4,7 @@ import type {NextPage} from "next";
 import {QueryClient, QueryClientProvider} from "react-query";
 import {ChakraUIThemeProvider} from "providers"
 
-import "../styles/globals.css";
+import "../styles/globals.scss";
 
 export type NextPageWithLayout = NextPage & {
     getLayout?: (page: ReactElement) => ReactNode;

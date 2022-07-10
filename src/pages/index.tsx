@@ -1,18 +1,51 @@
-import { NextPageWithLayout } from "./_app";
-import {MainLayout} from "layouts";
+import {NextPageWithLayout} from "./_app";
 import {ReactElement} from "react";
-import {Text} from "@chakra-ui/react";
+import {Center, Heading, Stack} from "@chakra-ui/react";
+import {BlankLayout} from "layouts";
+import Image from 'next/image';
+import Lottie from 'react-lottie';
+import animationData from '../../public/assets/lottie/donate.json';
 
+const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: animationData,
+    rendererSettings: {
+        preserveAspectRatio: "xMidYMid slice"
+    }
+};
 const Home: NextPageWithLayout = () => {
-  return (
-   <>
-       <Text fontSize='6xl'>خانه</Text>
-   </>
-  );
+    return (
+        <div className='coming-soon'>
+            <div className='coming-soon-header'>
+                <div className='coming-soon-header__logo'>
+                    <Image src='/assets/images/icon.png'
+                           layout='fill'/>
+                </div>
+                <Heading as='h4' size='md'>قهوت با من</Heading>
+            </div>
+            <div className='coming-soon-content'>
+
+                <Stack spacing={6}>
+                    <Heading as='h4' size='lg'>
+                        حمایت طرفدارن خود را با چند کلیک داشته باشید😉
+                    </Heading>
+                    <Heading as='h4' size='md'>
+                        به زودی کنار شمایم . . .
+                    </Heading>
+                    <Lottie   options={defaultOptions}
+                              height={250}
+                              width={250}/>
+                </Stack>
+
+            </div>
+
+        </div>
+    );
 };
 
 Home.getLayout = function getLayout(page: ReactElement) {
-  return <MainLayout>{page}</MainLayout>;
+    return <BlankLayout>{page}</BlankLayout>;
 };
 
 export default Home;
